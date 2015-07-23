@@ -1,4 +1,4 @@
-# [hackaday.io](http://hackaday.io) Project Badges
+# [Hackaday.io](http://hackaday.io) Project Badges
 
 ## Example
 
@@ -6,7 +6,7 @@
 
 ## Description
 
-Based on SVG templates from [nodei.co](https://nodei.co) and [dockeri.co](https://dockeri.co). This nodejs app generates Project Badges for any project on [apm](https://github.com/atom/apm).
+Based on the [Hackaday.io Skull Counter](https://hackaday.io/project/5614-skull-counter-using-api). This nodejs app generates Project Badges for any project on [hackaday.io](http://hackaday.io).
 
 ## Link
 
