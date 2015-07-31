@@ -1,0 +1,7 @@
+{
+  "name": "hackaday-io-badges",
+  "description": "Badges for Hackaday.io Projects",
+  "repository": "https://github.com/tcyrus/hackaday-io-badges",
+  "logo": "http://node-js-sample.herokuapp.com/node.svg",
+  "keywords": ["node", "hackaday", "express"]
+}

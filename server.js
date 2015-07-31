@@ -2,8 +2,7 @@ var express=require('express'),
   app=express(),
   https=require('https'),
   path=require('path'),
-  swig=require('swig'),
-  config=require('./config');
+  swig=require('swig');
 
 app.set('etag','strong');
 app.set('port',(process.env.PORT||6000));
@@ -11,13 +10,17 @@ app.engine('svg',swig.renderFile);
 app.set('views',path.join(__dirname,'/views'));
 app.set('view cache',false);
 
+app.get("/", function(req,res) {
+  res.redirect('/hackaday');
+});
+
 app.get("/hackaday", function(req,res) {
   res.sendFile(path.join(__dirname,"/views/index.html"));
 });
 
 app.get('/hackaday/:id.svg', function(req,res) {
   var id=req.params.id.replace(/[|&;$%@"<>()+,]/g,"");
-  var url="https://api.hackaday.io/v1/projects/"+id+"?api_key="+config.API_KEY;
+  var url="https://api.hackaday.io/v1/projects/"+id+"?api_key="+process.env.HACKADAY_IO_API_KEY;
   https.get(url, function(resp) {
     var body='';
 
