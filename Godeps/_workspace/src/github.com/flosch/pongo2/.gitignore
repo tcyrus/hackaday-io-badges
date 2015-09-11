@@ -6,6 +6,7 @@
 # Folders
 _obj
 _test
+.idea
 
 # Architecture specific extensions/prefixes
 *.[568vq]
@@ -20,10 +21,20 @@ _cgo_export.*
 _testmain.go
 
 *.exe
-*.test
-*.prof
 
-# Heroku Enviorment Config
-.env
-
-main
+.project
+EBNF.txt
+test1.tpl
+pongo2_internal_test.go
+tpl-error.out
+/count.out
+/cover.out
+*.swp
+*.iml
+/cpu.out
+/mem.out
+/pongo2.test
+*.error
+/profile
+/coverage.out
+/pongo2_internal_test.ignore

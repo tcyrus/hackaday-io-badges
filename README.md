@@ -8,7 +8,7 @@
 
 ## Description
 
-Based on the [Hackaday.io Skull Counter](https://hackaday.io/project/5614-skull-counter-using-api). This nodejs app generates Project Badges for any project on [hackaday.io](http://hackaday.io).
+Based on the [Hackaday.io Skull Counter](https://hackaday.io/project/5614-skull-counter-using-api). This Golang app generates Project Badges for any project on [hackaday.io](http://hackaday.io).
 
 ## Link
 

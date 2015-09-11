@@ -1,5 +1,7 @@
-FROM node:latest
+FROM golang
 
-CMD ["nodejs", "server.js"]
+ADD . /go/src/github.com/tcyrus/hackaday-io-badges
+RUN go install github.com/tcyrus/hackaday-io-badges
+ENTRYPOINT /go/bin/hackaday-io-badges
 
-EXPOSE 6000
+EXPOSE 8080
