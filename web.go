@@ -2,26 +2,20 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/tcyrus/hackaday-io-badges/Godeps/_workspace/src/github.com/flosch/pongo2"
 	"github.com/tcyrus/hackaday-io-badges/Godeps/_workspace/src/github.com/gorilla/mux"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 )
 
-// Pre-compiling the templates at application startup using the
-// little Must()-helper function (Must() will panic if FromFile()
-// or FromString() will return with an error - that's it).
-// It's faster to pre-compile it anywhere at startup and only
-// execute the template later.
+var HACKADAY_IO_API_KEY = os.Getenv("HACKADAY_IO_API_KEY")
 
-var tplBadge = pongo2.Must(pongo2.FromFile("views/badge.svg"))
+var Badge = pongo2.Must(pongo2.FromFile("views/badge.svg"))
 
-func RedirectHandler(path string) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, path, http.StatusMovedPermanently)
-	}
+func RedirectHandler(path string) http.Handler {
+	return http.RedirectHandler(path, http.StatusMovedPermanently)
 }
 
 func FileHandler(str string) func(http.ResponseWriter, *http.Request) {
@@ -30,49 +24,46 @@ func FileHandler(str string) func(http.ResponseWriter, *http.Request) {
 	}
 }
 
+func getProject(id string) (dat map[string]interface{}, err error) {
+	r2, err := http.Get("https://api.hackaday.io/v1/projects/" + id + "?api_key=" + HACKADAY_IO_API_KEY)
+	if err != nil {return nil, err}
+
+	defer r2.Body.Close()
+	body, err := ioutil.ReadAll(r2.Body)
+	if err != nil {return nil, err}
+	if err := json.Unmarshal(body, &dat); err != nil {return nil, err}
+
+	if _, ok := dat["project"]; ok {return nil, errors.New("Invalid Project ID")}
+	if val, ok := dat["message"]; ok {return nil, errors.New(val.(string))}
+	return dat, nil
+}
+
 func BadgeHandler(w http.ResponseWriter, r *http.Request) {
-	var dat map[string]interface{}
-	id := mux.Vars(r)["id"]
+	dat, err := getProject(mux.Vars(r)["id"])
 
-	// Execute the template per HTTP request
-	req_get, _ := http.Get("https://api.hackaday.io/v1/projects/" + id + "?api_key=" + os.Getenv("HACKADAY_IO_API_KEY"))
-	defer req_get.Body.Close()
-
-	body, _ := ioutil.ReadAll(req_get.Body)
-
-	if err := json.Unmarshal(body, &dat); err != nil {
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	if _, ok := dat["project"]; ok {
-		http.Error(w, "Invalid", http.StatusInternalServerError)
-		return
-	}
-
-	if val, ok := dat["message"]; ok {
-		http.Error(w, val.(string), http.StatusInternalServerError)
-		return
-	}
-
-	skulls := int(dat["skulls"].(float64))
-	name := dat["name"]
+	skulls, name := int(dat["skulls"].(float64)), dat["name"]
 
 	w.Header().Set("Content-Type", "image/svg+xml")
-	if err := tplBadge.ExecuteWriter(pongo2.Context{"skulls": skulls, "name": name}, w); err != nil {
+
+	// Execute the template per HTTP request
+	if err := Badge.ExecuteWriter(pongo2.Context{"skulls": skulls, "name": name}, w); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
 func main() {
 	r := mux.NewRouter()
-	r.HandleFunc("/", RedirectHandler("/hackaday"))
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	r.Handle("/", RedirectHandler("/hackaday"))
+	r.Handle("/hackaday/", RedirectHandler("/hackaday"))
 	r.HandleFunc("/hackaday", FileHandler("views/index.html"))
-	r.HandleFunc("/hackaday/favicon.ico", FileHandler("views/favicon.ico"))
 	r.HandleFunc("/hackaday/{id}.svg", BadgeHandler)
 	port := os.Getenv("PORT")
-  if port == "" {
-    log.Fatal("$PORT must be set")
-  }
+	if port == "" {port = "8000"}
 	http.ListenAndServe(":" + port, r)
 }
