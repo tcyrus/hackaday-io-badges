@@ -10,9 +10,9 @@ import (
 	"os"
 )
 
-const HACKADAY_IO_API_KEY string = os.Getenv("HACKADAY_IO_API_KEY")
+var HACKADAY_IO_API_KEY = os.Getenv("HACKADAY_IO_API_KEY")
 
-const Badge *pongo2.Template = pongo2.Must(pongo2.FromFile("views/badge.svg"))
+var Badge = pongo2.Must(pongo2.FromFile("views/badge.svg"))
 
 func RedirectHandler(path string) http.Handler {
 	return http.RedirectHandler(path, http.StatusMovedPermanently)
