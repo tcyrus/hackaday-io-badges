@@ -10,9 +10,9 @@ import (
 	"os"
 )
 
-var HACKADAY_IO_API_KEY = os.Getenv("HACKADAY_IO_API_KEY")
+const HACKADAY_IO_API_KEY string = os.Getenv("HACKADAY_IO_API_KEY")
 
-var Badge = pongo2.Must(pongo2.FromFile("views/badge.svg"))
+const Badge *pongo2.Template = pongo2.Must(pongo2.FromFile("views/badge.svg"))
 
 func RedirectHandler(path string) http.Handler {
 	return http.RedirectHandler(path, http.StatusMovedPermanently)
@@ -24,29 +24,44 @@ func FileHandler(str string) func(http.ResponseWriter, *http.Request) {
 	}
 }
 
-func getProject(id string) (dat map[string]interface{}, err error) {
+func getProject(id string) (data map[string]interface{}, err error) {
 	r2, err := http.Get("https://api.hackaday.io/v1/projects/" + id + "?api_key=" + HACKADAY_IO_API_KEY)
-	if err != nil {return nil, err}
+	if err != nil {
+		return nil, err
+	}
 
 	defer r2.Body.Close()
-	body, err := ioutil.ReadAll(r2.Body)
-	if err != nil {return nil, err}
-	if err := json.Unmarshal(body, &dat); err != nil {return nil, err}
 
-	if _, ok := dat["project"]; ok {return nil, errors.New("Invalid Project ID")}
-	if val, ok := dat["message"]; ok {return nil, errors.New(val.(string))}
-	return dat, nil
+	body, err := ioutil.ReadAll(r2.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := json.Unmarshal(body, &data); err != nil {
+		return nil, err
+	}
+
+	if _, ok := data["project"]; ok {
+		return nil, errors.New("Invalid Project ID")
+	}
+
+	if val, ok := data["message"]; ok {
+		return nil, errors.New(val.(string))
+	}
+
+	return data, nil
 }
 
 func BadgeHandler(w http.ResponseWriter, r *http.Request) {
-	dat, err := getProject(mux.Vars(r)["id"])
+	data, err := getProject(mux.Vars(r)["id"])
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	skulls, name := int(dat["skulls"].(float64)), dat["name"]
+	skulls := int(data["skulls"].(float64))
+	name := data["name"]
 
 	w.Header().Set("Content-Type", "image/svg+xml")
 
@@ -64,6 +79,8 @@ func main() {
 	r.HandleFunc("/hackaday", FileHandler("views/index.html"))
 	r.HandleFunc("/hackaday/{id}.svg", BadgeHandler)
 	port := os.Getenv("PORT")
-	if port == "" {port = "8000"}
+	if port == "" {
+		port = "8000"
+	}
 	http.ListenAndServe(":" + port, r)
 }
