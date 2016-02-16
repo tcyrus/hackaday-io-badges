@@ -1,9 +1,9 @@
 # [pongo](https://en.wikipedia.org/wiki/Pongo_%28genus%29)2
 
 [![Join the chat at https://gitter.im/flosch/pongo2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/flosch/pongo2)
-[![GoDoc](https://godoc.org/github.com/flosch/pongo2?status.svg)](https://godoc.org/github.com/flosch/pongo2)
+[![GoDoc](https://godoc.org/github.com/flosch/pongo2?status.png)](https://godoc.org/github.com/flosch/pongo2)
 [![Build Status](https://travis-ci.org/flosch/pongo2.svg?branch=master)](https://travis-ci.org/flosch/pongo2)
-[![Coverage Status](https://coveralls.io/repos/flosch/pongo2/badge.svg?branch=master)](https://coveralls.io/r/flosch/pongo2?branch=master)
+[![Coverage Status](https://coveralls.io/repos/flosch/pongo2/badge.png?branch=master)](https://coveralls.io/r/flosch/pongo2?branch=master)
 [![gratipay](http://img.shields.io/badge/gratipay-support%20pongo-brightgreen.svg)](https://gratipay.com/flosch/)
 [![Bountysource](https://www.bountysource.com/badge/tracker?tracker_id=3654947)](https://www.bountysource.com/trackers/3654947-pongo2?utm_source=3654947&utm_medium=shield&utm_campaign=TRACKER_BADGE)
 
@@ -157,7 +157,6 @@ You can access pongo2's API documentation on [godoc](https://godoc.org/github.co
  * [beego-pongo2.v2](https://github.com/ipfans/beego-pongo2.v2) - Same as `beego-pongo2`, but for pongo2 v2.
  * [macaron-pongo2](https://github.com/macaron-contrib/pongo2) - pongo2 support for [Macaron](https://github.com/Unknwon/macaron), a modular web framework.
  * [ginpongo2](https://github.com/ngerakines/ginpongo2) - middleware for [gin](github.com/gin-gonic/gin) to use pongo2 templates
- * [pongo2gin](https://github.com/robvdl/pongo2gin) - alternative renderer for [gin](github.com/gin-gonic/gin) to use pongo2 templates
  * [pongo2-trans](https://github.com/fromYukki/pongo2trans) - `trans`-tag implementation for internationalization
  * [tpongo2](https://github.com/tango-contrib/tpongo2) - pongo2 support for [Tango](https://github.com/lunny/tango), a micro-kernel & pluggable web framework.
 

@@ -1,11 +1,11 @@
 {
 	"ImportPath": "github.com/tcyrus/hackaday-io-badges",
-	"GoVersion": "go1.5",
+	"GoVersion": "go1.5.3",
 	"Deps": [
 		{
 			"ImportPath": "github.com/flosch/pongo2",
-			"Comment": "v1.0-rc1-182-ga269242",
-			"Rev": "a269242022ae534b052672d6a9326a40560a63e7"
+			"Comment": "v1.0-rc1-174-gf5d79aa",
+			"Rev": "f5d79aa0a914c08eb7f51a96cd7b2dbbe46fca46"
 		},
 		{
 			"ImportPath": "github.com/gorilla/context",
@@ -13,7 +13,7 @@
 		},
 		{
 			"ImportPath": "github.com/gorilla/mux",
-			"Rev": "26a6070f849969ba72b72256e9f14cf519751690"
+			"Rev": "49c024275504f0341e5a9971eb7ba7fa3dc7af40"
 		}
 	]
 }
