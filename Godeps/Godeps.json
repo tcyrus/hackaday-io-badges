@@ -8,12 +8,9 @@
 			"Rev": "f5d79aa0a914c08eb7f51a96cd7b2dbbe46fca46"
 		},
 		{
-			"ImportPath": "github.com/gorilla/context",
-			"Rev": "1c83b3eabd45b6d76072b66b746c20815fb2872d"
-		},
-		{
-			"ImportPath": "github.com/gorilla/mux",
-			"Rev": "49c024275504f0341e5a9971eb7ba7fa3dc7af40"
+			"ImportPath": "github.com/julienschmidt/httprouter",
+			"Comment": "v1.1-28-g153d9c9",
+			"Rev": "153d9c9fa8b6a5995c6a300cca099e1f3408733f"
 		}
 	]
 }

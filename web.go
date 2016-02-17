@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/tcyrus/hackaday-io-badges/Godeps/_workspace/src/github.com/flosch/pongo2"
-	"github.com/tcyrus/hackaday-io-badges/Godeps/_workspace/src/github.com/gorilla/mux"
+	"github.com/tcyrus/hackaday-io-badges/Godeps/_workspace/src/github.com/julienschmidt/httprouter"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 var HACKADAY_IO_API_KEY = os.Getenv("HACKADAY_IO_API_KEY")
@@ -18,8 +20,8 @@ func RedirectHandler(path string) http.Handler {
 	return http.RedirectHandler(path, http.StatusMovedPermanently)
 }
 
-func FileHandler(str string) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
+func FileHandler(str string) func(http.ResponseWriter, *http.Request, httprouter.Params) {
+	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		http.ServeFile(w, r, str)
 	}
 }
@@ -41,19 +43,19 @@ func getProject(id string) (data map[string]interface{}, err error) {
 		return nil, err
 	}
 
-	if _, ok := data["project"]; ok {
+	if _, invalid := data["project"]; invalid {
 		return nil, errors.New("Invalid Project ID")
 	}
 
-	if val, ok := data["message"]; ok {
-		return nil, errors.New(val.(string))
+	if message, ok := data["message"]; ok {
+		return nil, errors.New(message.(string))
 	}
 
 	return data, nil
 }
 
-func BadgeHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := getProject(mux.Vars(r)["id"])
+func BadgeHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	data, err := getProject(strings.Replace(ps.ByName("id"), ".svg", "", 1))
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -72,15 +74,14 @@ func BadgeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	r := mux.NewRouter()
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	r.Handle("/", RedirectHandler("/hackaday"))
-	r.Handle("/hackaday/", RedirectHandler("/hackaday"))
-	r.HandleFunc("/hackaday", FileHandler("views/index.html"))
-	r.HandleFunc("/hackaday/{id}.svg", BadgeHandler)
+	router := httprouter.New()
+	router.ServeFiles("/static/*filepath", http.Dir("static"))
+	router.Handler("GET", "/", RedirectHandler("/hackaday"))
+	router.GET("/hackaday", FileHandler("views/index.html"))
+	router.GET("/hackaday/:id", BadgeHandler)
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8000"
 	}
-	http.ListenAndServe(":" + port, r)
+	log.Fatal(http.ListenAndServe(":" + port, router))
 }
