@@ -15,13 +15,13 @@ Based on the [Hackaday.io Skull Counter](https://hackaday.io/project/5614-skull-
 To embed a badge in Markdown:
 
 ```md
-[![](https://hackaday-io-badges.herokuapp.com/hackaday/{id}.svg)]({url})
+[![](https://hackaday-io-badges.herokuapp.com/{id}.svg)]({url})
 ```
 
 To embed a badge in HTML:
 
 ```html
-<a href="{url}"><img src="https://hackaday-io-badges.herokuapp.com/hackaday/{id}.svg"></a>
+<a href="{url}"><img src="https://hackaday-io-badges.herokuapp.com/{id}.svg"></a>
 ```
 
 Replace `{id}` with your package id and `{url}` with a link to the package page.

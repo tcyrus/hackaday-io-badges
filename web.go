@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"github.com/tcyrus/hackaday-io-badges/Godeps/_workspace/src/github.com/flosch/pongo2"
-	"github.com/tcyrus/hackaday-io-badges/Godeps/_workspace/src/github.com/julienschmidt/httprouter"
+	"html/template"
+	"github.com/julienschmidt/httprouter"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -12,9 +12,14 @@ import (
 	"strings"
 )
 
+type BadgeData struct {
+	Skulls int
+	Name string
+}
+
 var HACKADAY_IO_API_KEY = os.Getenv("HACKADAY_IO_API_KEY")
 
-var Badge = pongo2.Must(pongo2.FromFile("views/badge.svg"))
+var Badge, _ = template.ParseFiles("views/badge.svg")
 
 func RedirectHandler(path string) http.Handler {
 	return http.RedirectHandler(path, http.StatusMovedPermanently)
@@ -63,22 +68,19 @@ func BadgeHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 	}
 
 	skulls := int(data["skulls"].(float64))
-	name := data["name"]
+	name := data["name"].(string)
 
 	w.Header().Set("Content-Type", "image/svg+xml")
 
 	// Execute the template per HTTP request
-	if err := Badge.ExecuteWriter(pongo2.Context{"skulls": skulls, "name": name}, w); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	Badge.Execute(w, &BadgeData{Skulls: skulls, Name: name})
 }
 
 func main() {
 	router := httprouter.New()
 	router.ServeFiles("/static/*filepath", http.Dir("static"))
-	router.Handler("GET", "/", RedirectHandler("/hackaday"))
-	router.GET("/hackaday", FileHandler("views/index.html"))
-	router.GET("/hackaday/:id", BadgeHandler)
+	router.GET("/", FileHandler("views/index.html"))
+	router.GET("/:id", BadgeHandler)
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8000"

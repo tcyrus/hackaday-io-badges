@@ -7,7 +7,7 @@
     width="109px" height="44px"
     viewBox="0 0 109 44"
     enable-background="new 0 0 109 44">
-    <title>{{ name }}</title>
+    <title>{{.Name}}</title>
     <rect x="2" y="2"
         width="105" height="40"
         rx="15" ry="15"
@@ -24,6 +24,6 @@
          font-weight="bold"
          font-family="'Proxima Nova','Proxima-Nova',Helvetica Neue,Helvetica,Arial,sans-serif"
          fill="#bd9f5c">
-         {{ skulls }}
+         {{.Skulls}}
      </text>
 </svg>
