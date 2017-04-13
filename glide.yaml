@@ -1,3 +1,0 @@
-package: github.com/tcyrus/hackaday-io-badges
-import:
-- package: github.com/julienschmidt/httprouter

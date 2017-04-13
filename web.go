@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"html/template"
-	"github.com/julienschmidt/httprouter"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 type BadgeData struct {
@@ -21,12 +21,8 @@ var HACKADAY_IO_API_KEY = os.Getenv("HACKADAY_IO_API_KEY")
 
 var Badge, _ = template.ParseFiles("views/badge.svg")
 
-func RedirectHandler(path string) http.Handler {
-	return http.RedirectHandler(path, http.StatusMovedPermanently)
-}
-
-func FileHandler(str string) func(http.ResponseWriter, *http.Request, httprouter.Params) {
-	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func FileHandler(str string) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, str)
 	}
 }
@@ -59,8 +55,8 @@ func getProject(id string) (data map[string]interface{}, err error) {
 	return data, nil
 }
 
-func BadgeHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	data, err := getProject(strings.Replace(ps.ByName("id"), ".svg", "", 1))
+func BadgeHandler(w http.ResponseWriter, r *http.Request) {
+	data, err := getProject(mux.Vars(r)["id"])
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -77,13 +73,14 @@ func BadgeHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 }
 
 func main() {
-	router := httprouter.New()
-	router.ServeFiles("/static/*filepath", http.Dir("static"))
-	router.GET("/", FileHandler("views/index.html"))
-	router.GET("/:id", BadgeHandler)
+	r := mux.NewRouter()
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	r.HandleFunc("/", FileHandler("views/index.html"))
+	r.HandleFunc("/{id:[0-9]+}.svg", BadgeHandler)
+	r.HandleFunc("/{id:[0-9]+}", BadgeHandler)
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8000"
 	}
-	log.Fatal(http.ListenAndServe(":" + port, router))
+	log.Fatal(http.ListenAndServe(":" + port, r))
 }

@@ -1,6 +1,0 @@
-hash: 521ca53ea03be3a87daad535da6399826cde78895158dfe3f70fe613b859762a
-updated: 2016-04-07T13:50:48.482199696-04:00
-imports:
-- name: github.com/julienschmidt/httprouter
-  version: 77366a47451a56bb3ba682481eed85b64fea14e8
-devImports: []
