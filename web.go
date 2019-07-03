@@ -32,6 +32,9 @@ func getProject(id string) (data map[string]interface{}, err error) {
 	if err != nil {
 		return nil, err
 	}
+	if r2 == nil {
+		return nil, errors.New("Empty API Response")
+	}
 
 	defer r2.Body.Close()
 
