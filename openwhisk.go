@@ -4,24 +4,24 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 // Main function for the action
 func Main(obj map[string]interface{}) map[string]interface{} {
-	var badgeId int
+	badgeId := obj["__ow_path"].(string)
+	badgeId = strings.TrimSuffix(strings.TrimPrefix(badgeId, "/"), ".svg")
 
-	_, err := fmt.Sscanf(obj["__ow_path"].(string), "/%d", &badgeId)
-	if err != nil {
+	if _, err := strconv.Atoi(badgeId); err != nil {
 		return map[string]interface{}{
-			"statusCode": http.StatusInternalServerError,
+			"statusCode": http.StatusBadRequest,
 			"body": err.Error(),
 		}
 	}
 
-	data, err := getProject(strconv.Itoa(badgeId))
+	data, err := getProject(badgeId)
 	if err != nil {
 		return map[string]interface{}{
 			"statusCode": http.StatusInternalServerError,
